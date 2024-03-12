@@ -5,7 +5,7 @@
             "name": "My Debug DP Zipper",
             "type": "cppdbg",
             "request": "launch",
-            "args": ["--usernumbers", "22304071, 30506597", "--username", "Efrahim", "--usernumber", "22304071", "--usernames", "Efrahim Tamaku, Nsimba Antonio"],
+            "args": ["--usernumbers", "22304071, 30506597", "--username", "Nsimba Tamaku", "--usernumber", "22304071", "--usernames", "Efrahim Tamaku, Nsimba Antonio"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
