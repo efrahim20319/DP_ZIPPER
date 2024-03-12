@@ -31,6 +31,16 @@ int main(int argc, char const *argv[])
         }
     }
     printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumer, usernames, usernumers);
-
+    system("find * -maxdepth 0 -type d > .dp-zipper-files");
+    FILE * fp = fopen(".dp-zipper-files", "r");
+    char fileName[100];
+    if (fp != NULL) { 
+         while (fscanf(fp, "%s", fileName) != EOF) {
+            if (strcmp(fileName, "src")  == 0) {
+                printf("Find It");
+            }
+        }
+    }
+    fclose(fp);
     return 0;
 }
