@@ -8,14 +8,17 @@ void displayFlags(char *username, char *usernumber, char *usernames, char *usern
 {
     printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumber, usernames, usernumbers);
     printf("[rezip: ");
-    if (rezip) {
+    if (rezip)
+    {
         printf("True]\n");
-    } else {
+    }
+    else
+    {
         printf("False]\n");
     }
 }
 
-void readFlags(int numberOfArguments, char * arguments[], char *username, char *usernumber, char *usernames, char *usernumbers, int * rezip)
+void readFlags(int numberOfArguments, char *arguments[], char *username, char *usernumber, char *usernames, char *usernumbers, int *rezip)
 {
     int i = 0;
     for (i = 0; i < numberOfArguments; i++)
@@ -49,14 +52,8 @@ void readFlags(int numberOfArguments, char * arguments[], char *username, char *
     }
 }
 
-int main(int argc, char const *argv[])
+int findFolder(char *folderToFind)
 {
-    // flags
-    char username[100] = "", usernumber[100] = "", usernames[100] = "", usernumbers[100] = "";
-    int hasTheSRCFolder = 0;
-    int rezip = 0, * pt_rezip = &rezip;
-    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip);
-    displayFlags(username, usernumber, usernames, usernumbers, rezip);
     system("find * -maxdepth 0 -type d > .dp-zipper-files");
     FILE *fp = fopen(".dp-zipper-files", "r");
     char folderName[50];
@@ -64,13 +61,30 @@ int main(int argc, char const *argv[])
     {
         while (fscanf(fp, "%s", folderName) != EOF)
         {
-            if (strcmp(folderName, "src") == 0)
+            if (strcmp(folderName, folderToFind) == 0)
             {
-                hasTheSRCFolder = 1;
+                return 1;
             }
         }
     }
     fclose(fp);
+    return 0;
+}
+
+int main(int argc, char const *argv[])
+{
+    // flags
+    char username[100] = "", usernumber[100] = "", usernames[100] = "", usernumbers[100] = "";
+    int hasTheSRCFolder = 0;
+    int rezip = 0, *pt_rezip = &rezip;
+    FILE *fp = NULL;
+    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip);
+    displayFlags(username, usernumber, usernames, usernumbers, rezip);
+    hasTheSRCFolder = findFolder("src");
+
+    if (rezip && hasTheSRCFolder) {
+        system("zip -r SAMPLE src AUTHORS.txt");
+    }
     if (hasTheSRCFolder)
     {
         printf("Source folder found\n");
