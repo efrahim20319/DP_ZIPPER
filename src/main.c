@@ -4,46 +4,67 @@
 #include <string.h>
 #include <unistd.h>
 
-int main(int argc, char const *argv[])
+void displayFlags(char *username, char *usernumber, char *usernames, char *usernumbers, int rezip)
 {
-    // flags
-    char *username, *usernumer, *usernames, *usernumers;
-    username = usernumer = usernames = usernumers = NULL;
-    int hasTheSRCFolder = 0;
+    printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumber, usernames, usernumbers);
+    printf("[rezip: ");
+    if (rezip) {
+        printf("True]\n");
+    } else {
+        printf("False]\n");
+    }
+}
+
+void readFlags(int numberOfArguments, char * arguments[], char *username, char *usernumber, char *usernames, char *usernumbers, int * rezip)
+{
     int i = 0;
-    for (i = 0; i < argc; i++)
+    for (i = 0; i < numberOfArguments; i++)
     {
         // Needs to be refactored
-        if (strcmp("--username", argv[i]) == 0)
+        if (strcmp("--username", arguments[i]) == 0)
         {
-            username = argv[i + 1];
+            strcpy(username, arguments[i + 1]);
             continue;
         }
-        if (strcmp("--usernumber", argv[i]) == 0)
+        if (strcmp("--usernumber", arguments[i]) == 0)
         {
-            usernumer = argv[i + 1];
+            strcpy(usernumber, arguments[i + 1]);
             continue;
         }
-        if (strcmp("--usernames", argv[i]) == 0)
+        if (strcmp("--usernames", arguments[i]) == 0)
         {
-            usernames = argv[i + 1];
+            strcpy(usernames, arguments[i + 1]);
             continue;
         }
-        if (strcmp("--usernumbers", argv[i]) == 0)
+        if (strcmp("--usernumbers", arguments[i]) == 0)
         {
-            usernumers = argv[i + 1];
+            strcpy(usernumbers, arguments[i + 1]);
+            continue;
+        }
+        if (strcmp("--rezip", arguments[i]) == 0 || strcmp("-r", arguments[i]) == 0)
+        {
+            *rezip = 1;
             continue;
         }
     }
-    printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumer, usernames, usernumers);
+}
+
+int main(int argc, char const *argv[])
+{
+    // flags
+    char username[100] = "", usernumber[100] = "", usernames[100] = "", usernumbers[100] = "";
+    int hasTheSRCFolder = 0;
+    int rezip = 0, * pt_rezip = &rezip;
+    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip);
+    displayFlags(username, usernumber, usernames, usernumbers, rezip);
     system("find * -maxdepth 0 -type d > .dp-zipper-files");
     FILE *fp = fopen(".dp-zipper-files", "r");
-    char fileName[100];
+    char folderName[50];
     if (fp != NULL)
     {
-        while (fscanf(fp, "%s", fileName) != EOF)
+        while (fscanf(fp, "%s", folderName) != EOF)
         {
-            if (strcmp(fileName, "src") == 0)
+            if (strcmp(folderName, "src") == 0)
             {
                 hasTheSRCFolder = 1;
             }
@@ -54,7 +75,7 @@ int main(int argc, char const *argv[])
     {
         printf("Source folder found\n");
         fp = fopen("AUTHORS.txt", "w");
-        fprintf(fp, "a%s;%s", usernumer, username);
+        fprintf(fp, "a%s;%s", usernumber, username);
         fclose(fp);
         system("zip -r SAMPLE src AUTHORS.txt");
     }
