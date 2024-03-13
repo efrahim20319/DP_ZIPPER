@@ -4,21 +4,16 @@
 #include <string.h>
 #include <unistd.h>
 
-void displayFlags(char *username, char *usernumber, char *usernames, char *usernumbers, int rezip)
+void displayFlags(char *username, char *usernumber, char *usernames, char *usernumbers, int rezip, int logFlags)
 {
     printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumber, usernames, usernumbers);
     printf("[rezip: ");
-    if (rezip)
-    {
-        printf("True]\n");
-    }
-    else
-    {
-        printf("False]\n");
-    }
+    rezip ? printf("True]\n") : printf("False]\n");
+    logFlags ? printf("True]\n") : printf("False]\n");
 }
 
-void readFlags(int numberOfArguments, char *arguments[], char *username, char *usernumber, char *usernames, char *usernumbers, int *rezip)
+void readFlags(int numberOfArguments, char *arguments[], char *username,
+               char *usernumber, char *usernames, char *usernumbers, int *rezip, int *logFlags)
 {
     int i = 0;
     for (i = 0; i < numberOfArguments; i++)
@@ -49,6 +44,11 @@ void readFlags(int numberOfArguments, char *arguments[], char *username, char *u
             *rezip = 1;
             continue;
         }
+        if (strcmp("--log", arguments[i]) == 0 || strcmp("-l", arguments[i]) == 0)
+        {
+            *logFlags = 1;
+            continue;
+        }
     }
 }
 
@@ -77,16 +77,17 @@ int main(int argc, char const *argv[])
     char username[100] = "", usernumber[100] = "", usernames[100] = "", usernumbers[100] = "";
     int hasTheSRCFolder = 0;
     int rezip = 0, *pt_rezip = &rezip;
-    FILE *fp = NULL;
-    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip);
-    displayFlags(username, usernumber, usernames, usernumbers, rezip);
+    int logFlags = 0, *pt_logFlags = &logFlags;
+    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip, pt_logFlags);
+    displayFlags(username, usernumber, usernames, usernumbers, rezip, logFlags);
     hasTheSRCFolder = findFolder("src");
-
-    if (rezip && hasTheSRCFolder) {
+    if (rezip && hasTheSRCFolder)
+    {
         system("zip -r SAMPLE src AUTHORS.txt");
     }
     if (hasTheSRCFolder)
     {
+        FILE *fp = NULL;
         printf("Source folder found\n");
         fp = fopen("AUTHORS.txt", "w");
         fprintf(fp, "a%s;%s", usernumber, username);
