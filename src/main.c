@@ -9,6 +9,7 @@ void displayFlags(char *username, char *usernumber, char *usernames, char *usern
     printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumber, usernames, usernumbers);
     printf("[rezip: ");
     rezip ? printf("True]\n") : printf("False]\n");
+    printf("[logFlags: ");
     logFlags ? printf("True]\n") : printf("False]\n");
 }
 
