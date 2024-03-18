@@ -4,17 +4,19 @@
 #include <string.h>
 #include <unistd.h>
 
-void displayFlags(char *username, char *usernumber, char *usernames, char *usernumbers, int rezip, int logFlags)
+void displayFlags(char *username, char *usernumber, char *usernames, char *usernumbers, int rezip, int logFlags, int openExplorer)
 {
     printf("[username: %s]\n[usernumber: %s]\n[usernames: %s]\n[usernumers: %s]\n", username, usernumber, usernames, usernumbers);
     printf("[rezip: ");
     rezip ? printf("True]\n") : printf("False]\n");
     printf("[logFlags: ");
     logFlags ? printf("True]\n") : printf("False]\n");
+    printf("[openExplorer: ");
+    openExplorer ? printf("True]\n") : printf("False]\n");
 }
 
 void readFlags(int numberOfArguments, char *arguments[], char *username,
-               char *usernumber, char *usernames, char *usernumbers, int *rezip, int *logFlags)
+               char *usernumber, char *usernames, char *usernumbers, int *rezip, int *logFlags, int * openExplorer)
 {
     int i = 0;
     for (i = 0; i < numberOfArguments; i++)
@@ -50,6 +52,11 @@ void readFlags(int numberOfArguments, char *arguments[], char *username,
             *logFlags = 1;
             continue;
         }
+        if (strcmp("--explorer", arguments[i]) == 0 || strcmp("-r", arguments[i]) == 0)
+        {
+            *openExplorer = 1;
+            continue;
+        }
     }
 }
 
@@ -79,8 +86,9 @@ int main(int argc, char const *argv[])
     int hasTheSRCFolder = 0;
     int rezip = 0, *pt_rezip = &rezip;
     int logFlags = 0, *pt_logFlags = &logFlags;
-    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip, pt_logFlags);
-    displayFlags(username, usernumber, usernames, usernumbers, rezip, logFlags);
+    int openExplerer = 0, * pt_openExplerer = &openExplerer;
+    readFlags(argc, argv, username, usernumber, usernames, usernumbers, pt_rezip, pt_logFlags, pt_openExplerer);
+    displayFlags(username, usernumber, usernames, usernumbers, rezip, logFlags, openExplerer);
     hasTheSRCFolder = findFolder("src");
     if (rezip && hasTheSRCFolder)
     {
@@ -98,6 +106,9 @@ int main(int argc, char const *argv[])
     else
     {
         printf("Couldn't find the source folder!!!");
+    }
+    if (openExplerer) {
+        system("explorer.exe .");
     }
     return 0;
 }
